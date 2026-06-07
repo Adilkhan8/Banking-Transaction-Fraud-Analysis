@@ -1,0 +1,16 @@
+merchant_id,merchant_name,category
+M001,Amazon,Retail
+M002,Walmart,Retail
+M003,Target,Retail
+M004,ATM,Banking
+M005,Netflix,Entertainment
+M006,Uber,Transportation
+M007,Starbucks,Food & Beverage
+M008,Apple,Technology
+M009,Flipkart,Retail
+M010,Swiggy,Food Delivery
+M011,Zomato,Food Delivery
+M012,Paytm,Fintech
+M013,Google Play,Technology
+M014,Microsoft,Technology
+M015,Shell,Fuel
