@@ -1,3 +1,5 @@
+# Fraud detection rules for suspicious transaction behavior.
+# Each function flags transactions that match a specific anomaly pattern.
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import avg, col, count, lit, stddev, sum
 from pyspark.sql.window import Window

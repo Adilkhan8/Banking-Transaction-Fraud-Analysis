@@ -1,3 +1,5 @@
+# Cleaning utilities for raw banking datasets.
+# These functions standardize column values and remove invalid or duplicate rows.
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, trim, upper
 

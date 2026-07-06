@@ -1,3 +1,5 @@
+# Reporting helpers for the fraud analysis workflow.
+# These functions print summaries and sample results to the console.
 from pyspark.sql import DataFrame
 
 
