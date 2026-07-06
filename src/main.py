@@ -1,23 +1,19 @@
-from ingest import ingest_data
 from fraud_rules import apply_all_fraud_rules
+from ingest import ingest_data
+from reports import print_dataset_summary, print_fraud_summary, show_transactions
 
-def run_pipeline() -> None:
-    """Execute the ingestion, cleansing, fraud detection, and reporting pipeline."""
+
+def run_pipeline(show_sample: bool = True, sample_limit: int = 20) -> None:
+    """Execute the full ingestion, cleaning, fraud detection, and reporting pipeline."""
     transactions, customers, merchants = ingest_data()
 
-    print("Loaded and cleaned datasets:")
-    print("- transactions:", transactions.count())
-    print("- customers:", customers.count())
-    print("- merchants:", merchants.count())
+    print_dataset_summary(transactions, customers, merchants)
 
     flagged_transactions = apply_all_fraud_rules(transactions)
+    print_fraud_summary(flagged_transactions)
 
-    print("\nFraud detection results:")
-    print("- flagged transactions:", flagged_transactions.count())
-    print("- distinct fraud reasons:", flagged_transactions.select("fraud_reason").distinct().count())
-
-    flagged_transactions.printSchema()
-    flagged_transactions.show(20, truncate=False)
+    if show_sample:
+        show_transactions(flagged_transactions, sample_limit)
 
 
 if __name__ == "__main__":
