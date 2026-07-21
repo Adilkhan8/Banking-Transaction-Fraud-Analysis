@@ -1,3 +1,5 @@
+# Data ingestion module.
+# Reads raw CSV files, applies cleaning rules, and returns the prepared datasets.
 from pathlib import Path
 from typing import Tuple
 

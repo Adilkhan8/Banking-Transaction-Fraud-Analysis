@@ -1,3 +1,5 @@
+# Main entry point for the fraud analysis pipeline.
+# Run this file to load data, clean it, detect fraud, and print results.
 from fraud_rules import apply_all_fraud_rules
 from ingest import ingest_data
 from reports import print_dataset_summary, print_fraud_summary, show_transactions

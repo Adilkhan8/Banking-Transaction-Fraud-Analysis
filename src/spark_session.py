@@ -1,3 +1,5 @@
+# Spark session setup for local development.
+# This creates a reusable Spark context for all data-processing steps.
 from pyspark.sql import SparkSession
 
 
