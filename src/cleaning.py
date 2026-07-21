@@ -9,7 +9,7 @@ def clean_transactions(df: DataFrame) -> DataFrame:
     cleaned = (
         df.withColumn("transaction_id", trim(col("transaction_id")))
         .withColumn("account_id", trim(col("account_id")))
-        .withColumn("customer_id", trim(col("customer_id")))
+        .withColumn("customer_id", trim(col("account_id")))
         .withColumn("transaction_time", col("timestamp").cast("timestamp"))
         .withColumn("merchant", trim(col("merchant")))
         .withColumn("transaction_type", trim(upper(col("transaction_type"))))
