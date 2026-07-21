@@ -20,16 +20,21 @@ def detect_multiple_transactions_short_period(
     min_transactions: int = 3,
 ) -> DataFrame:
     """Flag customers who make several transactions inside a short window."""
+    from pyspark.sql import functions as F
+
+    df_with_ts = df.withColumn("transaction_time_epoch", F.unix_timestamp(col("transaction_time")))
+
     window_spec = (
         Window.partitionBy("customer_id")
-        .orderBy(col("transaction_time"))
+        .orderBy(col("transaction_time_epoch"))
         .rangeBetween(-(time_window_minutes * 60), Window.currentRow)
     )
 
-    df_with_count = df.withColumn("transaction_count_in_window", count("*").over(window_spec))
+    df_with_count = df_with_ts.withColumn("transaction_count_in_window", count("*").over(window_spec))
 
     return (
         df_with_count.filter(col("transaction_count_in_window") >= min_transactions)
+        .drop("transaction_time_epoch")
         .withColumn("fraud_flag", lit(True))
         .withColumn(
             "fraud_reason",
