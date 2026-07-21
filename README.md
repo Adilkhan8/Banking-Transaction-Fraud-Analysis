@@ -41,7 +41,15 @@ python -m pip install pyspark
 
 ## Run the application
 
-From the project root, run:
+From the project root, run the simple desktop UI:
+
+```bash
+python src/ui.py
+```
+
+You can select the three CSV files from the UI before running the fraud analysis.
+
+If you prefer to run the pipeline from the terminal, use:
 
 ```bash
 python src/main.py
@@ -50,7 +58,7 @@ python src/main.py
 If you are using the project virtual environment, the command is:
 
 ```bash
-.venv\Scripts\python.exe src/main.py
+.venv\Scripts\python.exe src/ui.py
 ```
 
 ## Expected output
