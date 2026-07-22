@@ -1,6 +1,5 @@
-import os
 import tkinter as tk
-from tkinter import filedialog, messagebox
+from tkinter import filedialog, messagebox, ttk
 from pathlib import Path
 
 from main import run_pipeline
@@ -26,6 +25,21 @@ class FraudAnalysisUI:
         btn_frame.pack(pady=16)
         tk.Button(btn_frame, text="Run Analysis", width=16, command=self.run_analysis).pack(side=tk.LEFT, padx=8)
         tk.Button(btn_frame, text="Browse Default Folder", width=20, command=self.pick_default_folder).pack(side=tk.LEFT, padx=8)
+
+        self.result_text = tk.Text(root, height=6, width=70, wrap=tk.WORD)
+        self.result_text.pack(padx=24, pady=(0, 8))
+        self.result_text.insert(tk.END, "Analysis summary will appear here.")
+
+        self.tree = ttk.Treeview(root, columns=("transaction_id", "customer_id", "amount", "fraud_reason"), show="headings", height=8)
+        self.tree.heading("transaction_id", text="Transaction ID")
+        self.tree.heading("customer_id", text="Customer ID")
+        self.tree.heading("amount", text="Amount")
+        self.tree.heading("fraud_reason", text="Fraud Reason")
+        self.tree.column("transaction_id", width=130, anchor="center")
+        self.tree.column("customer_id", width=120, anchor="center")
+        self.tree.column("amount", width=90, anchor="center")
+        self.tree.column("fraud_reason", width=220, anchor="w")
+        self.tree.pack(padx=24, pady=(0, 16), fill=tk.BOTH, expand=True)
 
     def _build_file_row(self, label_text: str, var: tk.StringVar) -> None:
         frame = tk.Frame(self.root)
@@ -73,11 +87,46 @@ class FraudAnalysisUI:
             return
 
         try:
-            run_pipeline(
+            results = run_pipeline(
                 transactions_path=transactions_path,
                 customers_path=customers_path,
                 merchants_path=merchants_path,
+                return_results=True,
             )
+
+            summary_report = ""
+            if results:
+                flagged_df = results["flagged_transactions"]
+                summary_report = (
+                    f"Loaded and cleaned datasets:\n"
+                    f"- transactions: {results['transactions'].count()}\n"
+                    f"- customers: {results['customers'].count()}\n"
+                    f"- merchants: {results['merchants'].count()}\n\n"
+                    f"Fraud detection results:\n"
+                    f"- flagged transactions: {flagged_df.count()}\n"
+                    f"- distinct fraud reasons: {flagged_df.select('fraud_reason').where('fraud_reason IS NOT NULL').distinct().count()}"
+                )
+
+            self.result_text.delete("1.0", tk.END)
+            self.result_text.insert(tk.END, summary_report or "No analysis output generated.")
+
+            for row in self.tree.get_children():
+                self.tree.delete(row)
+
+            if results:
+                flagged_df = results["flagged_transactions"]
+                rows = flagged_df.select("transaction_id", "customer_id", "amount", "fraud_reason").collect()
+                for item in rows:
+                    self.tree.insert(
+                        "",
+                        tk.END,
+                        values=(
+                            item["transaction_id"],
+                            item["customer_id"],
+                            item["amount"],
+                            item["fraud_reason"],
+                        ),
+                    )
         except Exception as exc:  # pragma: no cover - UI feedback path
             messagebox.showerror("Analysis failed", str(exc))
 
